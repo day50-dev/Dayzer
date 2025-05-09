@@ -10,4 +10,4 @@ Built for:
 * Thread syncing: Route context through a centralized store with clear APIs
 * Git-style ops: Tag, merge, fork, and audit conversational history
 
-This is part of the [llmehelp](https://github.com/kristopolous/llmehelp), [streamdown](https://github.com/kristopolous/Streamdown), and [Week7](https://github.com/kristopolous/megacode) efforts.
+This is part of Day50, which does  [llmehelp](https://github.com/kristopolous/llmehelp), [streamdown](https://github.com/kristopolous/Streamdown), and [Week7](https://github.com/kristopolous/megacode) .
