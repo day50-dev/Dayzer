@@ -1,4 +1,4 @@
-# dejaview
+
 DejaView is a memory and routing layer for LLM conversations.
 It lets you persist, transfer, and resume threads across tools like VS Code, Aider, chat UIs, and agent shells — without losing context.
 
