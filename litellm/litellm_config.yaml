@@ -8,3 +8,6 @@ model_list:
         - "org-1"
         - "org-2"
         - "org-3"
+
+general_settings:
+  database_url: postgresql://postgres:password@localhost/

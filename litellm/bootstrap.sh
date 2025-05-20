@@ -8,7 +8,8 @@ install() {
 }
 
 run() {
-    litellm --config ./example.yaml
+    pipx install prisma
+    litellm --config ./litellm_config.yaml
 }
 
 dock() {
