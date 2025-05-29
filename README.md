@@ -2,6 +2,7 @@ So dejaview is a way to have conversations with your previous conversations and 
 
 This is the core tech of day50. The primary way to do this will be mcp to recall, proxy to store.
 
+litellm is not the right way to go.
 
 make it public
 
