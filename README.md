@@ -1,4 +1,4 @@
-So dejaview is a way to have conversations with your previous conversations and other peoples conversations and have them associated with work.
+Dayzer is a way to have conversations with your previous conversations and other peoples conversations and have them associated with work.
 
 This is the core tech of day50. The primary way to do this will be mcp to recall, proxy to store.
 
