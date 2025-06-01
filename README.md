@@ -1,3 +1,10 @@
+Dayzer is a way to have conversations with your previous conversations and other peoples conversations and have them associated with work.
+
+This is the core tech of day50. The primary way to do this will be mcp to recall, proxy to store.
+
+litellm is not the right way to go.
+
+make it public
 
 DejaView is a memory and routing layer for LLM conversations.
 It lets you persist, transfer, and resume threads across tools like VS Code, Aider, chat UIs, and agent shells — without losing context.
