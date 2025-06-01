@@ -8,8 +8,10 @@ install() {
 }
 
 run() {
-    pipx install prisma
-    litellm --config ./litellm_config.yaml
+    uv venv
+    source .venv/bin/activate
+    uv pip install prisma
+    uvx litellm --config ./litellm_config.yaml
 }
 
 dock() {

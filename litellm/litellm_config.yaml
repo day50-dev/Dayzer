@@ -1,13 +1,14 @@
 ---
 model_list:
-  - model_name: "*"
+  - model_name: "openrouter/*"
     litellm_params:
-      model: openai/*
-      api_key: "os.environ/OPENAI_API_KEY"
+      model: "openrouter/*"
+      api_key: "os.environ/OPENROUTER_KEY"
       organization:
         - "org-1"
         - "org-2"
         - "org-3"
 
 general_settings:
-  database_url: postgresql://postgres:password@localhost/
+  master_key: sk-1234 
+  database_url: "postgresql://postgres:password@localhost/"
