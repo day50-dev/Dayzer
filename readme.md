@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 export OPENROUTER_API_KEY=your-openrouter-key
 uvicorn main:app --host 0.0.0.0 --port 4000
-
+```
 Dayzer is a way to have conversations with your previous conversations and other peoples conversations and have them associated with work.
 
 This is the core tech of day50. The primary way to do this will be mcp to recall, proxy to store.
