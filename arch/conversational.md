@@ -12,3 +12,10 @@ where history is actually
   data:
   meta:
 } 
+
+The realization is only partial meta data is discoverable at any given point.
+
+    Some important things
+        date
+        user
+        tool (header)
