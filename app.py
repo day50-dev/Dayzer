@@ -5,8 +5,9 @@ import random
 from redis.asyncio import Redis as ioredis
 from litellm import completion
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi import Request
 
 app = FastAPI()
 ws_redis = ioredis.from_url("redis://localhost")
@@ -86,46 +87,66 @@ def summarize(uid, summary=None):
     rds.hset(_topicList, uid, summary)
     rds.publish(_topicList, json.dumps({uid: summary}))
 
-def generate_image(prompt):
-    url = f"http://{_sd_ip}/sdapi/v1/txt2img"
 
-    payload = {
-        "prompt": prompt,
-        "steps": 10,
-        "seed": -1,
-        "cfg_scale": 3,
-        "width": 512,
-        "height": 512,
-        # add other parameters as needed
+
+async def make_openai_request(request: Request, endpoint: str):
+    """Generic OpenAI proxy handler"""
+    import httpx
+    
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return JSONResponse(
+            {"error": "OPENAI_API_KEY not configured"},
+            status_code=500
+        )
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": request.headers.get("Content-Type", "application/json"),
+        "User-Agent": "OpenAI-Proxy/1.0"
     }
+    
+    # Remove proxy-specific headers
+    for header in ['host', 'connection', 'content-length']:
+        headers.pop(header.lower(), None)
 
-    payload["prompt"] += ", realistic, eccentric, scandalous, flamboyant, abstract, surreal, strange,"
-    payload["negative_prompt"] = "normal, nudity"
+    body = await request.body()
+    target_url = f"https://api.openai.com/v1/{endpoint}"
 
-    if random.random() < 0.15:
-        payload["prompt"] += ", homosexual"
-    elif random.random() < 0.3:
-        payload["prompt"] += ", bisexual"
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                target_url,
+                headers=headers,
+                content=body,
+                timeout=30.0
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            return JSONResponse(
+                {"error": f"OpenAI API error: {str(e)}"},
+                status_code=e.response.status_code
+            )
 
-    response = requests.post(url, json=payload)
-    data = response.json()
+        async def generate():
+            async for chunk in response.aiter_bytes():
+                yield chunk
 
-    # The image is returned as base64-encoded string(s)
-    image_b64 = data["images"][0]
+        return StreamingResponse(
+            generate(),
+            media_type=response.headers.get("Content-Type", "application/json"),
+            status_code=response.status_code
+        )
 
-    # Decode and save to file
-    image_name = uuid.uuid4().hex
-    with open(f"fe/images/{image_name}.png", "wb") as f:
-        f.write(base64.b64decode(image_b64))
-    return image_name
+@app.post("/v1/completions")
+async def completions_proxy(request: Request):
+    """OpenAI Completion endpoint proxy"""
+    return await make_openai_request(request, "completions")
 
-@app.post("/image")
-def image(data: dict):
-    return {
-        "res": True, 
-        "data": generate_image(data.get('prompt'))
-    }
-
+@app.post("/v1/chat/completions")
+async def chat_completions_proxy(request: Request):
+    """OpenAI Chat Completion endpoint proxy"""
+    return await make_openai_request(request, "chat/completions")
 
 @app.post("/chat")
 async def chat(data: dict):
@@ -264,8 +285,6 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     await stream_channel(websocket, _topicList)
 
-
-app.mount("/", StaticFiles(directory="fe", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
