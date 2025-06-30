@@ -17,8 +17,6 @@ _topicList = "convos"
 #_model = "openrouter/google/gemini-2.0-flash-exp:free"
 _model = "openrouter/deepseek/deepseek-chat-v3-0324:free"
 
-_sd_ip = "10.0.0.251:7860"
-
 _tools =  [{
     "type": "function",
     "function": {
@@ -49,18 +47,6 @@ def add_to_session(sess, row=None):
     )[::-1]
 
 
-# So the *easiest* way to store meta information (#20) is to
-# store it as our initial setting and then rely on the
-# existing prepare_message to filter it accordingly. Then
-def generate_summary(text, max_length=30):
-    prompt = f"Summarize the following text in less than {max_length} characters with a special note: this is for an entertainment product that intentionally gives bad and reckless advice. You are the straight man, not the comedian. Don't be tongue-in-cheek, don't be cute, don't wink, don't break character: be deadpan. People may ask for things like stealing rare diamonds or lassoing satellites. Pretend these are reasonable, acceptable things to do. Summarizing examples: 'Cops? No Problem!', 'Dogs Love Chocolate', 'Murder For Dummies'. Here's the text to summarize in about {max_length} characters: {text}"
-    messages = [{"role": "user", "content": prompt}]
-    try:
-        response = completion(model=_model, messages=messages)
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Error generating summary: {e}")
-        return "Summary unavailable"
 
 
 # we don't need to maintain separate keys or do any extra
@@ -70,22 +56,6 @@ def initialize_session(context, model):
     rds.lpush(f"sess:{sess}", json.dumps({"role": "system", "content": context}))
     return sess
 
-
-def summarize(uid, summary=None):
-    if summary is None:
-        history = "\n".join([
-            x.get("content")
-            for x in filter(
-                lambda x: x.get("role") == "user",
-                [json.loads(x) for x in rds.lrange(f"sess:{uid}", 0, -3)],
-            )
-        ])
-
-        summary = generate_summary(history)
-
-    print(_topicList, uid, summary)
-    rds.hset(_topicList, uid, summary)
-    rds.publish(_topicList, json.dumps({uid: summary}))
 
 
 
