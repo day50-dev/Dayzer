@@ -2,3 +2,4 @@
 .aider*
 tools
 out
+__pycache__
