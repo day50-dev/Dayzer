@@ -235,55 +235,6 @@ async def chat(data: dict):
     )
 
 
-@app.get("/history/{id}")
-async def get_history(id: str):
-    """Returns the chat history for a given session ID."""
-    key = f"sess:{id}"
-    history = list(
-        map(lambda x: json.loads(html.unescape(x.decode())), rds.lrange(key, 0, -1))
-    )[::-1]
-    return JSONResponse({"res": True, "data": history, "uid": id})
-
-
-@app.get("/topicList")
-async def topicList():
-    try:
-        # Assuming 'chats' is a hash
-        chats = rds.hgetall(_topicList)
-        # Decode keys and values from bytes to strings
-        chats = {k.decode(): v.decode() for k, v in chats.items()}
-        return JSONResponse({"result": True, "data": {"channels": chats}})
-    except Exception as e:
-        print(f"Error syncing data: {e}")
-        return JSONResponse({"result": False, "error": str(e)})
-
-
-async def stream_channel(websocket: WebSocket, what: str):
-    pubsub = ws_redis.pubsub()
-    await pubsub.subscribe(what)
-    try:
-        async for message in pubsub.listen():
-            if message["type"] == "message":
-                data = message["data"].decode("utf-8")
-                await websocket.send_text(data)
-
-    except Exception as e:
-        print(f"WebSocket error: {e}")
-    finally:
-        await pubsub.unsubscribe(what)
-        await pubsub.close()
-
-
-@app.websocket("/ws/channel/{id}")
-async def websocket_endpoint(websocket: WebSocket, id: str):
-    await websocket.accept()
-    await stream_channel(websocket, f"sess:{id}")
-
-
-@app.websocket("/ws/topics")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    await stream_channel(websocket, _topicList)
 
 
 if __name__ == "__main__":
