@@ -6,7 +6,9 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Simple OpenAI Chat")
     parser.add_argument("endpoint", choices=["local", "openrouter"], 
-                       help="Choose endpoint: 'local' for localhost:8080 or 'openrouter' for OpenRouter API")
+                       help="Choose endpoint: 'local' for localhost:8000 or 'openrouter' for OpenRouter API")
+    parser.add_argument("--stream", action="store_true", 
+                       help="Enable streaming responses")
     args = parser.parse_args()
     
     # Configure client based on endpoint choice
@@ -18,9 +20,10 @@ def main():
         
         client = OpenAI(
             api_key=api_key,
-            base_url="http://localhost:8080"
+            base_url="http://localhost:8000"
         )
-        print("Using local server at localhost:8080")
+        model = "gpt-3.5-turbo"
+        print("Using local server at localhost:8000")
         
     elif args.endpoint == "openrouter":
         api_key = os.getenv("OPENROUTER_API_KEY")
@@ -32,7 +35,8 @@ def main():
             api_key=api_key,
             base_url="https://openrouter.ai/api/v1"
         )
-        print("Using OpenRouter API")
+        model = "google/gemini-2.0-flash-exp:free"
+        print("Using OpenRouter API with Gemini 2.0 Flash")
     
     print("Simple OpenAI Chat (type 'quit' or 'exit' to end)")
     print("-" * 50)
@@ -53,15 +57,24 @@ def main():
                 continue
             
             # Send to OpenAI API
+            stream = args.stream
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": user_input}]
+                model=model,
+                messages=[{"role": "user", "content": user_input}],
+                stream=stream
             )
             
-            # Print assistant response
-            assistant_message = response.choices[0].message.content
-            print(f"Assistant: {assistant_message}")
-            print()  # Add blank line for readability
+            # Handle streaming responses
+            if stream:
+                for chunk in response:
+                    if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
+                        print(chunk.choices[0].delta.content, end="", flush=True)
+                print()  # Add newline after streaming
+            else:
+                # Print assistant response
+                assistant_message = response.choices[0].message.content
+                print(f"Assistant: {assistant_message}")
+                print()  # Add blank line for readability
             
         except KeyboardInterrupt:
             print("\nGoodbye!")
