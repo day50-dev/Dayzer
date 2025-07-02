@@ -1,14 +1,11 @@
 import os
-import requests
-from litellm import completion
 import uvicorn
-from fastapi import FastAPI, WebSocket
+from litellm import completion
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi import Request
 
 app = FastAPI()
-_model = "openrouter/google/gemini-2.0-flash-exp:free"
 
 @app.post("/v1/chat/completions")
 async def chat_completions_proxy(request: Request):
@@ -19,7 +16,7 @@ async def chat_completions_proxy(request: Request):
     try:
         response = completion(
             api_key=api_key,
-            model=_model,
+            model="openrouter/google/gemini-2.0-flash-exp:free"
             messages=body["messages"],
             stream=stream
         )
@@ -28,7 +25,7 @@ async def chat_completions_proxy(request: Request):
             return JSONResponse(response.json())
         
         def generate():
-            for chunk in response:  # Iterate over the streaming response
+            for chunk in response: 
                 yield f"data:{chunk.model_dump_json()}\n\n"
 
         return StreamingResponse(generate(), media_type="text/event-stream")
