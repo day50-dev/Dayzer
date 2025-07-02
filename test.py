@@ -13,13 +13,8 @@ def main():
     
     # Configure client based on endpoint choice
     if args.endpoint == "local":
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            print("Error: Please set the OPENAI_API_KEY environment variable")
-            return
-        
         client = OpenAI(
-            api_key=api_key,
+            api_key="sk-123",
             base_url="http://localhost:8000/v1"
         )
         model = "google/gemini-2.0-flash-exp:free"
@@ -56,14 +51,15 @@ def main():
             if not user_input:
                 continue
             
-            # Send to OpenAI API
             stream = args.stream
             response = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": user_input}],
                 stream=stream
             )
-            
+            #import ipdb; ipdb.set_trace()
+            #print(response)
+	
             # Handle streaming responses
             if stream:
                 for chunk in response:
@@ -77,12 +73,9 @@ def main():
                 print(f"Assistant: {assistant_message}")
                 print()  # Add blank line for readability
             
-        except KeyboardInterrupt:
-            print("\nGoodbye!")
-            break
         except Exception as e:
-            print(f"Error: {e}")
-            print("Please try again or type 'quit' to exit.")
+            print(e)
+            break
 
 if __name__ == "__main__":
     main()

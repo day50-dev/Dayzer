@@ -61,25 +61,11 @@ async def make_openai_request(request: Request, endpoint: str):
         if not stream:
             return JSONResponse(response.json())
         else:
-            async def generate():
+            def generate():
                 for chunk in response:  # Iterate over the streaming response
-                    #import ipdb; ipdb.set_trace()
-                    if chunk and len(chunk.choices) > 0:
-                        delta = chunk.choices[0].delta
-                        import json
-                        chunk_data = {
-                            "choices": [
-                                {
-                                    "delta": {
-                                        "content": delta.content
-                                    }
-                                }
-                            ]
-                        }
-                        json_string = json.dumps(chunk_data)
-                        print(json_string)
-                        yield json_string.encode('utf-8')
-            return StreamingResponse(generate(), media_type="application/json")
+                    yield f"data:{chunk.model_dump_json()}\n\n"
+
+            return StreamingResponse(generate(), media_type="text/event-stream")
 
     except Exception as e:
         return JSONResponse(

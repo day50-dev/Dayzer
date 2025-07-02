@@ -3,3 +3,6 @@
 tools
 out
 __pycache__
+tmp
+cacher
+http_cache
