@@ -20,9 +20,9 @@ def main():
         
         client = OpenAI(
             api_key=api_key,
-            base_url="http://localhost:8000"
+            base_url="http://localhost:8000/v1"
         )
-        model = "gpt-3.5-turbo"
+        model = "google/gemini-2.0-flash-exp:free"
         print("Using local server at localhost:8000")
         
     elif args.endpoint == "openrouter":
@@ -67,6 +67,7 @@ def main():
             # Handle streaming responses
             if stream:
                 for chunk in response:
+                    print(chunk)
                     if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                         print(chunk.choices[0].delta.content, end="", flush=True)
                 print()  # Add newline after streaming

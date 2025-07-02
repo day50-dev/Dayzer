@@ -4,6 +4,7 @@ import asyncio
 import random
 from redis.asyncio import Redis as ioredis
 from litellm import completion
+import litellm
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,8 +15,8 @@ ws_redis = ioredis.from_url("redis://localhost")
 rds = redis.Redis(host="localhost", port=6379, db=0)
 
 _topicList = "convos"
-#_model = "openrouter/google/gemini-2.0-flash-exp:free"
-_model = "openrouter/deepseek/deepseek-chat-v3-0324:free"
+_model = "openrouter/google/gemini-2.0-flash-exp:free"
+#_model = "openrouter/deepseek/deepseek-chat-v3-0324:free"
 
 _tools =  [{
     "type": "function",
@@ -34,87 +35,67 @@ _tools =  [{
     },
 }] 
 
-# row should be typed liked
-# {role: assistant/user, content: text}
-def add_to_session(sess, row=None):
-    key = f"sess:{sess}"
-    if row:
-        rds.lpush(key, json.dumps(row))
-        rds.publish(key, json.dumps(row))
-
-    return list(
-        map(lambda x: json.loads(html.unescape(x.decode())), rds.lrange(key, 0, -1))
-    )[::-1]
-
-
-
-
-# we don't need to maintain separate keys or do any extra
-# cleanup AND we can simply return it with everything else.
-def initialize_session(context, model):
-    sess = uuid.uuid4().hex
-    rds.lpush(f"sess:{sess}", json.dumps({"role": "system", "content": context}))
-    return sess
-
-
-
 
 async def make_openai_request(request: Request, endpoint: str):
-    """Generic OpenAI proxy handler"""
-    import httpx
-    
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return JSONResponse(
-            {"error": "OPENAI_API_KEY not configured"},
-            status_code=500
-        )
+    body = await request.json()
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": request.headers.get("Content-Type", "application/json"),
-        "User-Agent": "OpenAI-Proxy/1.0"
-    }
-    
-    # Remove proxy-specific headers
-    for header in ['host', 'connection', 'content-length']:
-        headers.pop(header.lower(), None)
+    api_key = os.environ.get("OPENROUTER_API_KEY")
 
-    body = await request.body()
-    target_url = f"https://api.openai.com/v1/{endpoint}"
-
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                target_url,
-                headers=headers,
-                content=body,
-                timeout=30.0
-            )
-            response.raise_for_status()
-        except httpx.HTTPStatusError as e:
+    try:
+        if not _model:
             return JSONResponse(
-                {"error": f"OpenAI API error: {str(e)}"},
-                status_code=e.response.status_code
+                {"error": "Model not specified in request body"},
+                status_code=400
             )
 
-        async def generate():
-            async for chunk in response.aiter_bytes():
-                yield chunk
+        stream = body.get('stream') or False
 
-        return StreamingResponse(
-            generate(),
-            media_type=response.headers.get("Content-Type", "application/json"),
-            status_code=response.status_code
+        #litellm._turn_on_debug()
+        #message = await asyncio.to_thread(
+        response = completion(
+            api_key=api_key,
+            model=_model,
+            messages=body["messages"],
+            stream=stream
+        )
+        if not stream:
+            return JSONResponse(response.json())
+        else:
+            async def generate():
+                for chunk in response:  # Iterate over the streaming response
+                    #import ipdb; ipdb.set_trace()
+                    if chunk and len(chunk.choices) > 0:
+                        delta = chunk.choices[0].delta
+                        import json
+                        chunk_data = {
+                            "choices": [
+                                {
+                                    "delta": {
+                                        "content": delta.content
+                                    }
+                                }
+                            ]
+                        }
+                        json_string = json.dumps(chunk_data)
+                        print(json_string)
+                        yield json_string.encode('utf-8')
+            return StreamingResponse(generate(), media_type="application/json")
+
+    except Exception as e:
+        return JSONResponse(
+            {"error": f"OpenAI API error: {str(e)}"},
+            status_code=500
         )
 
 @app.post("/v1/completions")
 async def completions_proxy(request: Request):
+
     """OpenAI Completion endpoint proxy"""
     return await make_openai_request(request, "completions")
 
 @app.post("/v1/chat/completions")
 async def chat_completions_proxy(request: Request):
+
     """OpenAI Chat Completion endpoint proxy"""
     return await make_openai_request(request, "chat/completions")
 
