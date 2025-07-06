@@ -9,36 +9,19 @@ from . import Dayzer
 
 app = FastAPI()
 
-_tools =  [{
-    "type": "function",
-    "function": {
-        "name": "generate_image",
-        "description": "Generate a relevant image given a prompt",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "prompt": {
-                    "type": "string",
-                    "description": "The thing to generate. e.g, a lovely spring day",
-                },
-            },
-        },
-    },
-}] 
-
 def completion_caller(body):
     api_key = # get it from the header
     model = body['model']
 
-    body['messages'] = Dayzer.process(api_key, body['messages'])
+    body['messages'] = Dayzer.history_process(api_key, body['messages'])
     user_api_key = Dayzer.get_api_key(caller_key=api_key, model=model)
-    tools = Dayzer.tools(body)
+    tools = Dayzer.add_tools(body)
 
     response = completion(
         api_key=user_api_key,
         model=model,
         messages=body["messages"],
-        tools
+        tools,
         stream=body.get('stream') or False
     )
     return response
