@@ -25,3 +25,7 @@ def add_tools(body):
     toolList = body.get('tools') or []
     toolList += _tools
     return toolList
+
+# Use parts of the stream id
+def get_stream_id(body):
+    return 0

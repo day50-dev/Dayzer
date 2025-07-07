@@ -16,7 +16,7 @@ async def chat_completions_proxy(request: Request):
     try:
         response = completion(
             api_key=api_key,
-            model="openrouter/google/gemini-2.0-flash-exp:free"
+            model="openrouter/google/gemini-2.0-flash-exp:free",
             messages=body["messages"],
             stream=stream
         )
