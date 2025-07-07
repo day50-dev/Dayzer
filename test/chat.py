@@ -5,14 +5,22 @@ from openai import OpenAI
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="Simple OpenAI Chat")
-parser.add_argument("endpoint", choices=["local", "openrouter"], 
+parser.add_argument("endpoint", choices=["dayzer", "local", "openrouter"], 
                    help="Choose endpoint: 'local' for localhost:8000 or 'openrouter' for OpenRouter API")
 parser.add_argument("--stream", action="store_true", 
                    help="Enable streaming responses")
 args = parser.parse_args()
 
-# Configure client based on endpoint choice
 if args.endpoint == "local":
+    client = OpenAI(
+        api_key="sk-123",
+        base_url="http://localhost:8080/v1"
+    )
+    model = "google/gemini-2.0-flash-exp:free"
+    print("Using local server at localhost:8000")
+
+# Configure client based on endpoint choice
+if args.endpoint == "dayzer":
     client = OpenAI(
         api_key="sk-123",
         base_url="http://localhost:8000/v1"
@@ -24,7 +32,6 @@ elif args.endpoint == "openrouter":
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
         print("Error: Please set the OPENROUTER_API_KEY environment variable")
-        return
     
     client = OpenAI(
         api_key=api_key,
