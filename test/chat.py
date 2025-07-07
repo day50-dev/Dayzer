@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import argparse
 from openai import OpenAI
 
@@ -9,7 +10,15 @@ parser.add_argument("endpoint", choices=["dayzer", "local", "openrouter"],
                    help="Choose endpoint: 'local' for localhost:8000 or 'openrouter' for OpenRouter API")
 parser.add_argument("--stream", action="store_true", 
                    help="Enable streaming responses")
+parser.add_argument("--stdin", action="store_true", 
+                   help="Enable streaming responses")
+
 args = parser.parse_args()
+
+message = None
+if args.stdin:
+    message = sys.stdin.read()
+    print(f"Using stdin: size {len(message)}")
 
 if args.endpoint == "local":
     client = OpenAI(
@@ -42,16 +51,19 @@ elif args.endpoint == "openrouter":
 
 while True:
     try:
-        user_input = input("You: ").strip()
-        
-        # Check for exit commands
-        if user_input.lower() in ['quit', 'exit', 'q']:
-            print("Goodbye!")
-            break
-        
-        # Skip empty input
-        if not user_input:
-            continue
+        if message:
+            user_input = message
+        else:
+            user_input = input("You: ").strip()
+            
+            # Check for exit commands
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                print("Goodbye!")
+                break
+            
+            # Skip empty input
+            if not user_input:
+                continue
         
         stream = args.stream
         response = client.chat.completions.create(
@@ -71,6 +83,9 @@ while True:
             assistant_message = response.choices[0].message.content
             print(f"Assistant: {assistant_message}")
             print()  # Add blank line for readability
+
+        if message:
+            sys.exit(0)
         
     except Exception as e:
         print(e)

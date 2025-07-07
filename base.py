@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This is all based on the minimal.py
 import os
 import uvicorn
@@ -5,12 +6,12 @@ from litellm import completion
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import Request
-from . import Dayzer
+import dayz
 
 app = FastAPI()
 
-def completion_caller(body):
-    api_key = # get it from the header
+def completion_caller(request, body):
+    api_key = request.headers.get("API_KEY") # get it from the header
     model = body['model']
 
     body['messages'] = Dayzer.history_process(api_key, body['messages'])
@@ -18,10 +19,11 @@ def completion_caller(body):
     tools = Dayzer.add_tools(body)
 
     response = completion(
+        base_url="http://localhost:8080/",
         api_key=user_api_key,
         model=model,
         messages=body["messages"],
-        tools,
+        tools=tools,
         stream=body.get('stream') or False
     )
     return response
@@ -32,7 +34,7 @@ async def chat_completions_proxy(request: Request):
     api_key = os.environ.get("OPENROUTER_API_KEY")
 
     try:
-        response = completion_caller(body)
+        response = completion_caller(request, body)
 
         if not stream:
             return JSONResponse(response.json())
@@ -49,4 +51,4 @@ async def chat_completions_proxy(request: Request):
             status_code=500
         )
 
-uvicorn.run(app, host="0.0.0.0", port=8000)
+uvicorn.run(app, host="0.0.0.0", port=0)
