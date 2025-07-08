@@ -23,3 +23,8 @@ I think projects as the context and files as the context are key, it should be f
 
 the question is whether it's too hard - doesn't matter, this *is* the launch strategy
 
+So really we need to find our common unit, how to express it, how to have ownership, essentially a db schema whether we're using an RDBMS or not - it's an exercise of necessity.
+
+
+
+
