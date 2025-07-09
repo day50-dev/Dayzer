@@ -1,6 +1,6 @@
 .envrc
 .aider*
-tools
+integrations
 out
 __pycache__
 tmp

@@ -1,5 +1,5 @@
 #!/bin/bash
-cd tools
+cd integrations
 dl() {
     for i in voideditor/void All-Hands-AI/OpenHands olimorris/codecompanion.nvim cline/cline RooCodeInc/Roo-Code Kilo-Org/kilocode Aider-AI/aider plandex-ai/plandex block/goose; do
         dir=$(basename $i)
