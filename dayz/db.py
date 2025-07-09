@@ -6,7 +6,6 @@ import time
 import os
 import sys
 import json
-import threading
 from datetime import timedelta
 from threading import Lock
 from pprint import pprint
@@ -289,10 +288,7 @@ def connect(db_file=None):
     default_db = os.environ['DB']
     logging.debug("Using {} as the DB as specified in the DB shell env variable")
   else:
-    default_db = '/var/db/config.db'
-    os.popen("/usr/bin/sudo /bin/mkdir -p /var/db/".format(default_db))
-    os.popen("/usr/bin/sudo /usr/bin/touch {}".format(default_db))
-    os.popen("/usr/bin/sudo /bin/chmod 0666 {}".format(default_db))
+    default_db = 'config.db'
     logging.debug("Using {} as the DB".format(default_db))
 
   if not db_file:

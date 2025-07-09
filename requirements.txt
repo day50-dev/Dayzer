@@ -25,3 +25,5 @@ requests
 rich
 requests_cache
 typer
+
+sqlite3
