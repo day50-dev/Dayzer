@@ -19,10 +19,10 @@ litellm is not the right way to go.
 
 make it public
 
-DejaView is a memory and routing layer for LLM conversations.
+Dayzer is a memory and routing layer for LLM conversations.
 It lets you persist, transfer, and resume threads across tools like VS Code, Aider, chat UIs, and agent shells — without losing context.
 
-Powered by a pluggable proxy (e.g. LiteLLM), DejaView tags each conversation with a unique ID and tracks the flow across applications. Whether you're coding, chatting, or running agents, you can recall, merge, or branch conversations like source control for thought.
+Powered by a pluggable proxy (e.g. LiteLLM), Dayzer tags each conversation with a unique ID and tracks the flow across applications. Whether you're coding, chatting, or running agents, you can recall, merge, or branch conversations like source control for thought.
 
 Built for:
 

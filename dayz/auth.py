@@ -21,7 +21,7 @@ app.include_router(auth.get_social_router(), prefix="/auth")
 # -------------------------------
 # Casbin Setup: Policy Enforcement
 # -------------------------------
-enforcer = casbin.Enforcer("casbin_model.conf", "casbin_policy.csv")
+enforcer = casbin.Enforcer("casbin-model.conf", "casbin-policy.csv")
 app.add_middleware(CasbinMiddleware, enforcer=enforcer)
 
 # -------------------------------
