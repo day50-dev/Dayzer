@@ -1,0 +1,6 @@
+p, user-123, resource-42, read
+p, user-123, resource-42, write
+
+p, team-abc, resource-99, read
+g, user-456, team-abc
+

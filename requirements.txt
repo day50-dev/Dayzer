@@ -27,3 +27,6 @@ requests_cache
 typer
 
 sqlite3
+
+authx
+casbin
