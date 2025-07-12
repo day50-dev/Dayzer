@@ -43,7 +43,9 @@ At different points of a company's growth, users serve different purpose. Here i
 It should be structured like github probably. You can
 commit new thoughts or concepts, get some kind of progress
 indicator. Projects can magically appear and be keyed based
-on the url
+on the url.
+
+People can "claim" their profile by adding a link to their page on the github social link profile page or log in with github.
 
 The goal is to collect llm conversation data associated with projects. It should be public by default with an option to be anonymized.
 
