@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub - Your Development Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fab fa-github"></i>
+                    <span>DevHub</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </button>
+                    <button class="nav-btn" data-section="projects">
+                        <i class="fas fa-folder"></i>
+                        Projects
+                    </button>
+                    <button class="nav-btn" data-section="feed">
+                        <i class="fas fa-rss"></i>
+                        Feed
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Profile Section -->
+            <section id="profile" class="section active">
+                <div class="profile-layout">
+                    <aside class="profile-sidebar">
+                        <div class="profile-card">
+                            <div class="avatar">
+                                <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Profile Picture">
+                            </div>
+                            <h1 class="profile-name">Alex Developer</h1>
+                            <p class="profile-username">@alexdev</p>
+                            <p class="profile-bio">Full-stack developer passionate about building great user experiences. Coffee enthusiast ☕</p>
+                            
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <span class="stat-number">42</span>
+                                    <span class="stat-label">Repositories</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1.2k</span>
+                                    <span class="stat-label">Followers</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">890</span>
+                                    <span class="stat-label">Following</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-details">
+                                <div class="detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>San Francisco, CA</span>
+                                </div>
+                                <div class="detail">
+                                    <i class="fas fa-link"></i>
+                                    <a href="#">alexdev.io</a>
+                                </div>
+                                <div class="detail">
+                                    <i class="fab fa-twitter"></i>
+                                    <a href="#">@alexdev</a>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="profile-content">
+                        <div class="contributions-section">
+                            <h2>Contributions</h2>
+                            <div class="contributions-grid" id="contributionsGrid"></div>
+                            <p class="contributions-text">
+                                <span class="contributions-count">1,847</span> contributions in the last year
+                            </p>
+                        </div>
+
+                        <div class="pinned-repos">
+                            <h2>Pinned Repositories</h2>
+                            <div class="repos-grid">
+                                <div class="repo-card">
+                                    <h3>awesome-portfolio</h3>
+                                    <p>A beautiful and responsive portfolio website template built with vanilla HTML, CSS, and JavaScript.</p>
+                                    <div class="repo-footer">
+                                        <span class="language">
+                                            <span class="language-color" style="background-color: #f1e05a;"></span>
+                                            JavaScript
+                                        </span>
+                                        <span class="stars">
+                                            <i class="fas fa-star"></i> 234
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="repo-card">
+                                    <h3>react-dashboard</h3>
+                                    <p>Modern admin dashboard built with React and TypeScript featuring dark mode and responsive design.</p>
+                                    <div class="repo-footer">
+                                        <span class="language">
+                                            <span class="language-color" style="background-color: #61dafb;"></span>
+                                            React
+                                        </span>
+                                        <span class="stars">
+                                            <i class="fas fa-star"></i> 156
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="section">
+                <div class="projects-header">
+                    <h1>Projects</h1>
+                    <div class="projects-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="javascript">JavaScript</button>
+                        <button class="filter-btn" data-filter="react">React</button>
+                        <button class="filter-btn" data-filter="python">Python</button>
+                    </div>
+                </div>
+                
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Projects will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Feed Section -->
+            <section id="feed" class="section">
+                <div class="feed-header">
+                    <h1>Activity Feed</h1>
+                    <div class="feed-filters">
+                        <button class="filter-btn active" data-filter="all">All Activity</button>
+                        <button class="filter-btn" data-filter="commits">Commits</button>
+                        <button class="filter-btn" data-filter="issues">Issues</button>
+                        <button class="filter-btn" data-filter="prs">Pull Requests</button>
+                    </div>
+                </div>
+                
+                <div class="feed-timeline" id="feedTimeline">
+                    <!-- Feed items will be populated by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+    <script src="projects.js"></script>
+    <script src="feed.js"></script>
+    <script src="contributions.js"></script>
+</body>
+</html>
