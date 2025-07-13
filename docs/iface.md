@@ -45,8 +45,14 @@ commit new thoughts or concepts, get some kind of progress
 indicator. Projects can magically appear and be keyed based
 on the url.
 
+There can also be a "feed" where related things get updated
+This changes the paradigm to feed/profile which meaks it easier to understand
+then instead of "posts" it's memories - so it's a combining of paradigms
+
+
 People can "claim" their profile by adding a link to their page on the github social link profile page or log in with github.
 
 The goal is to collect llm conversation data associated with projects. It should be public by default with an option to be anonymized.
+
 
 
