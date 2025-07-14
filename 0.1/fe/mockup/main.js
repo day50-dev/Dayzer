@@ -76,7 +76,7 @@ class AnimationObserver {
 
     init() {
         const animatedElements = document.querySelectorAll(
-            '.repo-card, .project-card, .feed-item, .profile-card'
+            '.repo-card, .project-card, .feed-item, .profile-card, .thought-card'
         );
         
         animatedElements.forEach(element => {

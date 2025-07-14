@@ -81,6 +81,14 @@
 
                     <div class="profile-content">
                         <div class="contributions-section">
+                        <div class="thoughts-section">
+                            <h2>Recent Thoughts</h2>
+                            <div class="thoughts-grid" id="thoughtsGrid">
+                                <!-- Thoughts will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="contributions-section">
                             <h2>Contributions</h2>
                             <div class="contributions-grid" id="contributionsGrid"></div>
                             <p class="contributions-text">
@@ -93,7 +101,12 @@
                             <div class="repos-grid">
                                 <div class="repo-card">
                                     <h3>awesome-portfolio</h3>
-                                    <p>A beautiful and responsive portfolio website template built with vanilla HTML, CSS, and JavaScript.</p>
+                                    <div class="project-thoughts">
+                                        <span class="thoughts-label">Related thoughts:</span>
+                                        <div class="thoughts-list">
+                                            <span class="thought-link">CSS Grid vs Flexbox</span>
+                                        </div>
+                                    </div>
                                     <div class="repo-footer">
                                         <span class="language">
                                             <span class="language-color" style="background-color: #f1e05a;"></span>
@@ -106,7 +119,12 @@
                                 </div>
                                 <div class="repo-card">
                                     <h3>react-dashboard</h3>
-                                    <p>Modern admin dashboard built with React and TypeScript featuring dark mode and responsive design.</p>
+                                    <div class="project-thoughts">
+                                        <span class="thoughts-label">Related thoughts:</span>
+                                        <div class="thoughts-list">
+                                            <span class="thought-link">Building a React Dashboard</span>
+                                        </div>
+                                    </div>
                                     <div class="repo-footer">
                                         <span class="language">
                                             <span class="language-color" style="background-color: #61dafb;"></span>
@@ -162,6 +180,8 @@
     <script src="main.js"></script>
     <script src="projects.js"></script>
     <script src="feed.js"></script>
+    <script src="thoughts.js"></script>
     <script src="contributions.js"></script>
+    <script src="project-detail.js"></script>
 </body>
 </html>

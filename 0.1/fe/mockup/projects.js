@@ -5,7 +5,7 @@ class ProjectsManager {
             {
                 id: 1,
                 name: 'E-Commerce Dashboard',
-                description: 'A comprehensive admin dashboard for managing online stores with real-time analytics, inventory management, and order tracking.',
+                thoughts: ['Database Optimization Strategies'],
                 technologies: ['React', 'Node.js', 'MongoDB', 'Socket.io'],
                 category: 'react',
                 githubUrl: '#',
@@ -16,7 +16,7 @@ class ProjectsManager {
             {
                 id: 2,
                 name: 'Weather App',
-                description: 'Beautiful weather application with location-based forecasts, interactive maps, and detailed weather analytics.',
+                thoughts: ['Mobile-First Design'],
                 technologies: ['JavaScript', 'CSS3', 'Weather API'],
                 category: 'javascript',
                 githubUrl: '#',
@@ -27,7 +27,7 @@ class ProjectsManager {
             {
                 id: 3,
                 name: 'Task Management System',
-                description: 'Collaborative task management platform with team features, time tracking, and project analytics.',
+                thoughts: ['API Design Principles'],
                 technologies: ['Python', 'Django', 'PostgreSQL', 'Redis'],
                 category: 'python',
                 githubUrl: '#',
@@ -38,7 +38,7 @@ class ProjectsManager {
             {
                 id: 4,
                 name: 'Portfolio Website',
-                description: 'Modern portfolio website with smooth animations, responsive design, and dynamic content management.',
+                thoughts: ['CSS Grid vs Flexbox'],
                 technologies: ['HTML5', 'CSS3', 'JavaScript', 'GSAP'],
                 category: 'javascript',
                 githubUrl: '#',
@@ -49,7 +49,7 @@ class ProjectsManager {
             {
                 id: 5,
                 name: 'Chat Application',
-                description: 'Real-time chat application with file sharing, emoji support, and group messaging capabilities.',
+                thoughts: ['JavaScript Async Patterns'],
                 technologies: ['React', 'Socket.io', 'Express', 'MongoDB'],
                 category: 'react',
                 githubUrl: '#',
@@ -60,7 +60,7 @@ class ProjectsManager {
             {
                 id: 6,
                 name: 'Data Visualization Tool',
-                description: 'Interactive data visualization platform for creating beautiful charts and dashboards from CSV data.',
+                thoughts: ['Performance Optimization'],
                 technologies: ['Python', 'Flask', 'D3.js', 'Pandas'],
                 category: 'python',
                 githubUrl: '#',
@@ -114,9 +114,17 @@ class ProjectsManager {
             `<span class="tech-tag">${tech}</span>`
         ).join('');
 
+        const thoughtsLinks = project.thoughts.map(thought => 
+            `<span class="thought-link">${thought}</span>`
+        ).join('');
         card.innerHTML = `
             <h3>${project.name}</h3>
-            <p>${project.description}</p>
+            <div class="project-thoughts">
+                <span class="thoughts-label">Related thoughts:</span>
+                <div class="thoughts-list">
+                    ${thoughtsLinks}
+                </div>
+            </div>
             <div class="project-tech">
                 ${techTags}
             </div>
@@ -149,6 +157,14 @@ class ProjectsManager {
             card.style.transform = 'translateY(0)';
         });
 
+        // Add click handler to navigate to project detail
+        const projectTitle = card.querySelector('h3');
+        projectTitle.style.cursor = 'pointer';
+        projectTitle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const projectName = project.name.toLowerCase().replace(/\s+/g, '-');
+            this.navigateToProject(projectName);
+        });
         return card;
     }
 
@@ -196,6 +212,36 @@ class ProjectsManager {
             this.projects[projectIndex] = { ...this.projects[projectIndex], ...updatedData };
             this.renderProjects(this.currentFilter);
         }
+    }
+
+    highlightRepository(repositoryName) {
+        // Find and highlight the repository card
+        setTimeout(() => {
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach(card => {
+                const projectName = card.querySelector('h3').textContent.toLowerCase().replace(/\s+/g, '-');
+                if (projectName === repositoryName) {
+                    // Scroll to the card
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Add highlight effect
+                    card.style.borderColor = 'var(--accent-blue)';
+                    card.style.boxShadow = '0 0 20px rgba(88, 166, 255, 0.3)';
+                    
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        card.style.borderColor = 'var(--border-color)';
+                        card.style.boxShadow = 'none';
+                    }, 3000);
+                }
+            });
+        }, 100);
+    }
+
+    navigateToProject(projectName) {
+        // Navigate to project detail page
+        const newUrl = `${window.location.pathname}?project=${projectName}`;
+        window.location.href = newUrl;
     }
 }
 
