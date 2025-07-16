@@ -8,6 +8,8 @@ from openai import OpenAI
 parser = argparse.ArgumentParser(description="Simple OpenAI Chat")
 parser.add_argument("endpoint", choices=["dayzer", "local", "openrouter"], 
                    help="Choose endpoint: 'local' for localhost:8000 or 'openrouter' for OpenRouter API")
+parser.add_argument("--address", action="store", default="localhost:8000/v1",
+                   help="hostname")
 parser.add_argument("--stream", action="store_true", 
                    help="Enable streaming responses")
 parser.add_argument("--stdin", action="store_true", 
@@ -23,7 +25,7 @@ if args.stdin:
 if args.endpoint == "local":
     client = OpenAI(
         api_key="sk-123",
-        base_url="http://localhost:8080/v1"
+        base_url=f"http://{args.address}"
     )
     model = "google/gemini-2.0-flash-exp:free"
     print("Using local server at localhost:8000")
@@ -32,10 +34,10 @@ if args.endpoint == "local":
 if args.endpoint == "dayzer":
     client = OpenAI(
         api_key="sk-123",
-        base_url="http://localhost:8000/v1"
+        base_url=f"http://{args.address}"
     )
     model = "google/gemini-2.0-flash-exp:free"
-    print("Using local server at localhost:8000")
+    print(f"Using local server at {args.address}")
     
 elif args.endpoint == "openrouter":
     api_key = os.getenv("OPENROUTER_API_KEY")

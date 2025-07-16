@@ -11,7 +11,7 @@ from fastapi.responses import RedirectResponse
 from authx import AuthX, AuthXConfig, RequestToken
 from fastapi_authz import CasbinMiddleware
 from sqlalchemy.orm import Session
-from . import auth_db
+import auth_db as auth_db
 
 app = FastAPI()
 
@@ -29,6 +29,7 @@ def get_db():
         db.close()
 
 # AuthX Setup
+"""
 auth = AuthX(AuthXConfig(
     JWT_ALGORITHM="HS256",
     JWT_SECRET_KEY="SUPERSECRETKEY",
@@ -37,7 +38,7 @@ auth = AuthX(AuthXConfig(
 ))
 auth.handle_errors(app)
 app.include_router(auth.get_social_router(), prefix="/auth")
-
+"""
 # Casbin Setup
 enforcer = casbin.Enforcer("casbin_model.conf", "casbin_policy.csv")
 app.add_middleware(CasbinMiddleware, enforcer=enforcer)
@@ -130,3 +131,4 @@ async def github_callback(request: Request, db: Session = Depends(get_db)):
 async def me(token: RequestToken = Depends(auth.get_token_from_request)):
     user = auth.verify_token(token)
     return {"sub": user.sub, "scopes": user.payload.get("scopes"), "public_key": user.payload.get("public_key")}
+
