@@ -7,3 +7,4 @@ tmp
 cacher
 http_cache
 .*
+*.db
