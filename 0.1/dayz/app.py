@@ -16,9 +16,6 @@ from sqlalchemy.orm import Session
 from authx import AuthX, AuthXConfig, RequestToken
 import auth_db as auth_db
 
-logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
-logger = logging.getLogger(__name__)
-
 app = FastAPI()
 
 # Configuration
@@ -129,14 +126,6 @@ def public_profile(public_key: str):
     # Return public info, maybe query DB here later
     return {"user": public_key, "bio": "This is a public profile."}
 
-@app.get("/resources/{resource_id}", dependencies=[Depends(auth.get_token_from_request)])
-def get_resource(resource_id: str, token: RequestToken = Depends()):
-    try:
-        user = auth.verify_token(token)
-    except Exception:
-        raise HTTPException(status_code=403, detail="Invalid or expired token")
-    # Casbin middleware enforces policy
-    return {"resource": resource_id, "accessed_by": user.sub}
 
 @app.get("/login/github")
 async def github_login():
@@ -265,15 +254,30 @@ async def protected_route(current_user: dict = Depends(verify_token)):
     """Example protected route"""
     return {"message": f"Hello {current_user['username']}!", "user": current_user}
 
+"""
+@app.get("/resources/{resource_id}", dependencies=[Depends(auth.get_token_from_request)])
+def get_resource(resource_id: str, token: RequestToken = Depends()):
+    try:
+        user = auth.verify_token(token)
+    except Exception:
+        raise HTTPException(status_code=403, detail="Invalid or expired token")
+    # Casbin middleware enforces policy
+    return {"resource": resource_id, "accessed_by": user.sub}
+
 @app.get("/me")
 async def me(token: RequestToken = Depends(auth.get_token_from_request)):
     user = auth.verify_token(token)
     return {"sub": user.sub, "scopes": user.payload.get("scopes"), "public_key": user.payload.get("public_key")}
+"""
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+    logger = logging.getLogger(__name__)
 
     # Check if OPENROUTER_API_KEY is set
     if not os.environ.get("OPENROUTER_API_KEY"):
