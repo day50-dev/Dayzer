@@ -8,14 +8,12 @@ import httpx
 import jwt
 from datetime import datetime, timedelta
 from litellm import completion
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse, StreamingResponse
-from fastapi import Request
-from fastapi import Depends, Request, HTTPException
-from fastapi.responses import RedirectResponse
-from authx import AuthX, AuthXConfig, RequestToken
+from fastapi import FastAPI, Depends, Request, HTTPException, status
+from fastapi.responses import JSONResponse, StreamingResponse, RedirectResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi_authz import CasbinMiddleware
 from sqlalchemy.orm import Session
+from authx import AuthX, AuthXConfig, RequestToken
 import auth_db as auth_db
 
 logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -142,6 +140,11 @@ async def github_callback(request: Request, db: Session = Depends(get_db)):
         custom_claims={"scopes": ["read", "write"], "public_key": user.username}
     )
     return RedirectResponse(url=f"/me?token={token}")
+
+@app.get("/auth/me")
+async def get_current_user(current_user: dict = Depends(verify_token)):
+    """Get current user info"""
+    return current_user
 
 @app.get("/me")
 async def me(token: RequestToken = Depends(auth.get_token_from_request)):
