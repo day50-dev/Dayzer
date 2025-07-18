@@ -2,6 +2,8 @@
 import os
 import uvicorn
 import casbin
+import argparse
+import logging
 from litellm import completion
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -84,7 +86,21 @@ async def chat_completions_proxy(request: Request):
             status_code=500
         )
 
-uvicorn.run(app, host="0.0.0.0", port=0)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    # Log the chunk between lines 79 and 80
+    logger.debug("Chunk between lines 79 and 80: %s", "return StreamingResponse(generate(), media_type='text/event-stream')")
+    # Check if OPENROUTER_API_KEY is set
+    if not os.environ.get("OPENROUTER_API_KEY"):
+        logger.warning("OPENROUTER_API_KEY is not set. Please set it as an environment variable.")
+
+    uvicorn.run(app, host="0.0.0.0", port=0)
 
 @app.get("/u/{public_key}")
 def public_profile(public_key: str):

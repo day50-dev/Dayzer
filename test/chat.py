@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import os
 import sys
 import argparse
@@ -14,8 +15,11 @@ parser.add_argument("--stream", action="store_true",
                    help="Enable streaming responses")
 parser.add_argument("--stdin", action="store_true", 
                    help="Enable streaming responses")
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
 
 args = parser.parse_args()
+logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+logger = logging.getLogger(__name__)
 
 message = None
 if args.stdin:
@@ -77,6 +81,7 @@ while True:
         # Handle streaming responses
         if stream:
             for chunk in response:
+                logging.debug(chunk)
                 if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                     print(chunk.choices[0].delta.content, end="", flush=True)
             print()  # Add newline after streaming

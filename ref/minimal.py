@@ -26,6 +26,7 @@ async def chat_completions_proxy(request: Request):
         
         def generate():
             for chunk in response: 
+                print(chunk.model_dump_json())
                 yield f"data:{chunk.model_dump_json()}\n\n"
 
         return StreamingResponse(generate(), media_type="text/event-stream")
