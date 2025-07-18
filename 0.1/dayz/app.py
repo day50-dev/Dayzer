@@ -4,6 +4,9 @@ import uvicorn
 import casbin
 import argparse
 import logging
+import httpx
+import jwt
+from datetime import datetime, timedelta
 from litellm import completion
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -15,7 +18,20 @@ from fastapi_authz import CasbinMiddleware
 from sqlalchemy.orm import Session
 import auth_db as auth_db
 
+logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
+
+# Configuration
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 24
+
+# Security
+security = HTTPBearer()
 
 # Initialize DB tables on startup
 @app.on_event("startup")
@@ -86,22 +102,6 @@ async def chat_completions_proxy(request: Request):
             status_code=500
         )
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
-    args = parser.parse_args()
-
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
-    logger = logging.getLogger(__name__)
-
-    # Log the chunk between lines 79 and 80
-    logger.debug("Chunk between lines 79 and 80: %s", "return StreamingResponse(generate(), media_type='text/event-stream')")
-    # Check if OPENROUTER_API_KEY is set
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        logger.warning("OPENROUTER_API_KEY is not set. Please set it as an environment variable.")
-
-    uvicorn.run(app, host="0.0.0.0", port=0)
-
 @app.get("/u/{public_key}")
 def public_profile(public_key: str):
     # Return public info, maybe query DB here later
@@ -147,4 +147,17 @@ async def github_callback(request: Request, db: Session = Depends(get_db)):
 async def me(token: RequestToken = Depends(auth.get_token_from_request)):
     user = auth.verify_token(token)
     return {"sub": user.sub, "scopes": user.payload.get("scopes"), "public_key": user.payload.get("public_key")}
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+
+
+    # Check if OPENROUTER_API_KEY is set
+    if not os.environ.get("OPENROUTER_API_KEY"):
+        logger.warning("OPENROUTER_API_KEY is not set. Please set it as an environment variable.")
+
+    uvicorn.run(app, host="0.0.0.0", port=8778)
+
 
