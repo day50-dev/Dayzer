@@ -1,0 +1,7 @@
+[ ] streaming 
+[ ] streaming with tool call
+[ ] basic memory
+[ ] context establish
+[ ] topic scoping
+[ ] user registration
+[ ] web interface
