@@ -32,6 +32,18 @@ def get_stream_id(body):
 
 ## auth stuff for later
 # AuthX Setup
+# Configuration
+import jwt
+import casbin
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 24
+
+# Security
+security = HTTPBearer()
+
 """
 auth = AuthX(AuthXConfig(
     JWT_ALGORITHM="HS256",

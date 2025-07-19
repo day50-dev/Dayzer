@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 import os
 import uvicorn
-import casbin
 import argparse
 import logging
 import httpx
-import jwt
 from datetime import datetime, timedelta
 from litellm import completion
 from fastapi import FastAPI, Depends, Request, HTTPException, status
@@ -15,23 +13,19 @@ from fastapi_authz import CasbinMiddleware
 from sqlalchemy.orm import Session
 from authx import AuthX, AuthXConfig, RequestToken
 import auth_db as auth_db
+from contextlib import asynccontextmanager
+import toolcalls
 
-app = FastAPI()
-
-# Configuration
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 24
-
-# Security
-security = HTTPBearer()
 
 # Initialize DB tables on startup
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # before load
     auth_db.init_db()
+    yield
+    # after
+
+app = FastAPI(lifespan=lifespan)
 
 # Dependency to get DB session
 def get_db():
@@ -85,7 +79,6 @@ async def chat_completions_proxy(request: Request):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
