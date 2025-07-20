@@ -33,6 +33,16 @@ The problem with the files approach of course is things move around and get refa
 
 Maybe this won't matter - it all depends on how the querying is done.
 
-Eventually there can be something like purpose included but for now let's ignore the problem
+Eventually there can be something like purpose included but for now let's ignore the problem.
 
-We should probably be more specific on a call-by-call basis.
+We should probably be more specific on a call-by-call basis. Let's try by being naive
+
+
+get_conversations_from(context, query) - get contextual conversations from the user
+establish_context() - might not be toolcalled
+
+Just get this working. 
+
+
+
+
