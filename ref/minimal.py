@@ -1,4 +1,5 @@
 import os
+import json
 import uvicorn
 from litellm import completion
 from fastapi import FastAPI
@@ -14,6 +15,7 @@ async def chat_completions_proxy(request: Request):
     stream = body.get('stream') or False
 
     try:
+        print("messages", json.dumps([body["messages"], stream], indent=2))
         response = completion(
             api_key=api_key,
             model="openrouter/google/gemini-2.0-flash-exp:free",
@@ -26,7 +28,7 @@ async def chat_completions_proxy(request: Request):
         
         def generate():
             for chunk in response: 
-                print(chunk.model_dump_json())
+                print("chunk", json.dumps(chunk.model_dump(), indent=2))
                 yield f"data:{chunk.model_dump_json()}\n\n"
 
         return StreamingResponse(generate(), media_type="text/event-stream")
