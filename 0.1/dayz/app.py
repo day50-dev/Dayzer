@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from authx import AuthX, AuthXConfig, RequestToken
 import auth_db as auth_db
 from contextlib import asynccontextmanager
-import toolcalls
+from toolcalls import toolList
 
 
 # Initialize DB tables on startup
@@ -42,7 +42,7 @@ def completion_caller(request, body):
 
     body['messages'] = Dayzer.history_process(api_key, body['messages'])
     user_api_key = Dayzer.get_api_key(caller_key=api_key, model=model)
-    tools = Dayzer.add_tools(body)
+    tools += toolList #Dayzer.add_tools(body)
 
     response = completion(
         base_url="http://localhost:8080/",
